@@ -12,6 +12,7 @@ import { MAX_FILE_MB, PDF_PREVIEW_SCALE } from './config/appConfig';
 import {
   APP_NAME
 } from './config/appConfig';
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 
 // UI UPGRADE: Imported professional icons from lucide-react
@@ -189,6 +190,7 @@ const { splitAndDownload } =
 
         </div>
       </div>
+      <SpeedInsights />
     </div>
   );
 }
