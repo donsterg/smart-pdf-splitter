@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { PDFDocument } from 'pdf-lib';
 
 import pdfjsLib from '../services/pdfService';
+import { trackEvent } from '../services/analyticsService';
 
 import { recognizeText }
   from '../services/ocrService';
@@ -19,6 +20,10 @@ import {
   PDF_RENDER_SCALE,
   OCR_LANGUAGE,
 } from '../config/appConfig';
+
+import {
+  captureError
+} from '../services/errorTrackingService';
 
 export default function usePdfProcessor({
   pdfBytes,
@@ -105,6 +110,12 @@ export default function usePdfProcessor({
           );
 
           setShowUpgradeButton(true);
+          trackEvent(
+              'upgrade_prompt_shown',
+              {
+                total_pages: totalPages,
+              }
+          );
 
           return;
         }
@@ -343,11 +354,25 @@ export default function usePdfProcessor({
           await generateZipBlob(zip);
 
         downloadZip(zipBlob);
+        trackEvent(
+          'zip_downloaded',
+          {
+            split_mode: splitMode,
+            total_pages: totalPages,
+            }
+        );
         completeProgress();
 
       } catch (error) {
 
         console.error(error);
+
+        captureError(
+          error,
+          {
+            operation: 'split_pdf',
+          }
+        );
 
         setErrorMessage(
           `Processing failed: ${error.message}`

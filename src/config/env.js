@@ -34,4 +34,10 @@ export const ENV = {
   
   DEFAULT_SPLIT_MODE:
     import.meta.env.VITE_DEFAULT_SPLIT_MODE,
+
+  POSTHOG_KEY:
+  import.meta.env.VITE_POSTHOG_KEY,
+
+  SENTRY_DSN:
+  import.meta.env.VITE_SENTRY_DSN,
 };

@@ -9,10 +9,9 @@ import useOcr from './hooks/useOcr';
 import usePdfProcessor from './hooks/usePdfProcessor';
 import useProgress from './hooks/useProgress';
 import { MAX_FILE_MB, PDF_PREVIEW_SCALE } from './config/appConfig';
-import {
-  APP_NAME
-} from './config/appConfig';
+import { APP_NAME } from './config/appConfig';
 import { SpeedInsights } from "@vercel/speed-insights/react"
+import { trackEvent } from './services/analyticsService';
 
 
 // UI UPGRADE: Imported professional icons from lucide-react
@@ -95,6 +94,17 @@ if (
 
       await page.render({ canvasContext: context, viewport: viewport }).promise;
       setPreviewImage(canvas.toDataURL('image/jpeg'));
+      trackEvent(
+        'pdf_uploaded',
+        {
+          file_size_mb:
+          (
+            file.size /
+            1024 /
+            1024
+          ).toFixed(2),
+        }
+      );
     } catch (error) {
       console.error("PDF Load Error:", error);
       setErrorMessage(`Failed to load PDF: ${error.message}`);

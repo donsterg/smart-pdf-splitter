@@ -1,10 +1,17 @@
 import { useCallback } from 'react';
+import {
+  trackEvent
+} from '../services/analyticsService';
 
 import {
   OCR_LANGUAGE,
 } from '../config/appConfig';
 
 import { recognizeText } from '../services/ocrService';
+
+import {
+  captureError
+} from '../services/errorTrackingService';
 
 export default function useOcr({
   crop,
@@ -72,6 +79,13 @@ export default function useOcr({
 
       console.error(error);
 
+      captureError(
+        error,
+        {
+          operation: 'perform_ocr',
+        }
+      );
+
       setErrorMessage(
         'OCR extraction failed.'
       );
@@ -89,7 +103,13 @@ export default function useOcr({
     setErrorMessage,
   ]);
 
+  trackEvent(
+  'ocr_completed'
+  );
+
   return {
     performOCR,
   };
+
+
 }

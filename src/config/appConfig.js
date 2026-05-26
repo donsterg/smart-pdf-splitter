@@ -1,13 +1,31 @@
-export const APP_NAME = 'PDF Splitter & Bulk Rename';
+import { ENV } from './env';
 
-export const FREE_PAGE_LIMIT = 5;
+export const APP_NAME =
+  ENV.APP_NAME;
 
-export const OCR_LANGUAGE = 'eng';
+export const FREE_PAGE_LIMIT =
+  ENV.FREE_PAGE_LIMIT;
 
-export const DEFAULT_SPLIT_MODE = 'smart';
+export const OCR_LANGUAGE =
+  ENV.OCR_LANGUAGE;
 
-export const MAX_FILE_MB = 25;
+export const DEFAULT_SPLIT_MODE =
+  ENV.DEFAULT_SPLIT_MODE;
 
-export const PDF_RENDER_SCALE = 2.0;
+export const MAX_FILE_MB =
+  ENV.MAX_FILE_MB;
 
-export const PDF_PREVIEW_SCALE = 1.5;
+export const PDF_RENDER_SCALE =
+  ENV.PDF_RENDER_SCALE;
+
+export const PDF_PREVIEW_SCALE =
+  ENV.PDF_PREVIEW_SCALE;
+
+export const ENABLE_OCR =
+  ENV.ENABLE_OCR;
+
+export const POSTHOG_KEY =
+  ENV.POSTHOG_KEY;
+
+export const SENTRY_DSN =
+  ENV.SENTRY_DSN;

@@ -1,5 +1,6 @@
 import Tesseract from 'tesseract.js';
 
+
 export const recognizeText = async (
   image,
   language = 'eng'
