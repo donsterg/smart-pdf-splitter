@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; 
+import { useState, useRef } from 'react'; 
 import pdfjsLib from './services/pdfService';
 import 'react-image-crop/dist/ReactCrop.css';
 import ErrorBanner from './components/ErrorBanner';
@@ -13,6 +13,7 @@ import {
   APP_NAME
 } from './config/appConfig';
 import { SpeedInsights } from "@vercel/speed-insights/react"
+import { Analytics } from '@vercel/analytics/react'
 
 
 // UI UPGRADE: Imported professional icons from lucide-react
@@ -191,6 +192,7 @@ const { splitAndDownload } =
         </div>
       </div>
       <SpeedInsights />
+      <Analytics />
     </div>
   );
 }
