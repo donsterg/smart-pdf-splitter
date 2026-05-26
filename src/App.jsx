@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; 
+import { useState, useRef } from 'react'; 
 import pdfjsLib from './services/pdfService';
 import 'react-image-crop/dist/ReactCrop.css';
 import ErrorBanner from './components/ErrorBanner';
