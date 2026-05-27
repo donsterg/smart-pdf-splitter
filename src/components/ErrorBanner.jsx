@@ -1,8 +1,10 @@
 import { AlertCircle } from 'lucide-react';
+import { redirectToCheckout } from '../services/stripeService';
 
 export default function ErrorBanner({
   errorMessage,
   showUpgradeButton,
+  user,
 }) {
   if (!errorMessage) return null;
 
@@ -18,11 +20,20 @@ export default function ErrorBanner({
       {showUpgradeButton && (
         <div className="mt-4">
           <button
-            onClick={() => window.location.href = '/upgrade-to-pro'}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors"
-          >
-            Upgrade to Pro for Unlimited Splitting
-          </button>
+                onClick={() => redirectToCheckout(user)}
+                className="
+                  mt-4
+                  bg-indigo-600
+                  text-white
+                  px-4
+                  py-2
+                  rounded-lg
+                  hover:bg-indigo-700
+                  transition-colors
+                "
+              >
+                Upgrade to Pro for unlimited splitting
+        </button>
         </div>
       )}
     </div>

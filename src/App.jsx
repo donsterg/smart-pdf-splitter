@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; 
+import React, { useState, useRef, useEffect } from 'react'; 
 import pdfjsLib from './services/pdfService';
 import 'react-image-crop/dist/ReactCrop.css';
 import ErrorBanner from './components/ErrorBanner';
@@ -12,10 +12,11 @@ import { MAX_FILE_MB, PDF_PREVIEW_SCALE } from './config/appConfig';
 import { APP_NAME } from './config/appConfig';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { trackEvent } from './services/analyticsService';
-import { useEffect } from 'react';
 import AuthPanel from './components/AuthPanel';
 import { getCurrentUser, onAuthStateChange } from './services/authService';
 import { ensureUserUsage } from './services/usageService';
+import { redirectToCheckout } from './services/stripeService';
+import { getUserSubscription } from './services/subscriptionService';
 
 
 // UI UPGRADE: Imported professional icons from lucide-react
@@ -36,6 +37,17 @@ export default function PdfSplitterApp() {
   const [showUpgradeButton, setShowUpgradeButton] = useState(false);
   const [user, setUser] = useState(null);
   const [usage, setUsage] = useState(null);
+  const [ subscription, setSubscription] = useState(null);
+  const isProUser = subscription?.subscription_tier === 'pro';
+  console.log(
+  'Subscription state:',
+  subscription
+);
+
+console.log(
+  'isProUser:',
+  isProUser
+);
   
 
   // UI UPGRADE: Added a progress state to show the user a visual loading bar during large splits
@@ -63,6 +75,24 @@ useEffect(() => {
         setUsage(
           usageData
         );
+      
+        const subscriptionData =
+          await getUserSubscription(
+            currentUser.id
+          );
+
+        setSubscription(
+          subscriptionData
+        );
+
+        console.log(
+          'Subscription:',
+          subscriptionData
+        );
+        console.log(
+          'Auth session:',
+          currentUser
+        );
       }
     });
 
@@ -87,9 +117,35 @@ useEffect(() => {
           usageData
         );
 
+        const subscriptionData =
+          await getUserSubscription(
+            currentUser.id
+          );
+
+        setSubscription(
+          subscriptionData
+        );
+
+        console.log(
+          'Subscription:',
+          subscriptionData
+        );
+
+        console.log(
+          'Usage loaded:',
+          usageData
+        );
+
+        console.log(
+          'Auth session:',
+          currentUser
+        );
+
       } else {
 
         setUsage(null);
+
+        setSubscription(null);
       }
     }
   );
@@ -222,6 +278,7 @@ const { splitAndDownload } =
     usage,
     setUsage,
     resetAppState,
+    isProUser,
 });
 
   // UI UPGRADE: Completely rebuilt the render block using Tailwind CSS classes.
@@ -243,6 +300,7 @@ const { splitAndDownload } =
         <ErrorBanner
           errorMessage={errorMessage}
           showUpgradeButton={showUpgradeButton}
+          user={user}
         />
 
         {/* UI UPGRADE: Created a two-column grid layout for desktop screens */}
@@ -284,10 +342,15 @@ const { splitAndDownload } =
                   {usage.pages_processed}
                 </p>
 
-                <p className="text-sm">
+               <p className="text-sm">
                   Plan:
                   {' '}
-                  {usage.subscription_tier}
+                  {
+                    subscription?.subscription_tier
+                      === 'pro'
+                      ? 'Pro'
+                      : 'Free'
+                  }
                 </p>
 
               </div>

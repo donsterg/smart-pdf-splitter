@@ -41,6 +41,7 @@ export default function usePdfProcessor({
   usage,
   setUsage,
   resetAppState,
+  isProUser,
 }) {
 
   const finalizeSubDocument =
@@ -78,7 +79,6 @@ export default function usePdfProcessor({
     useCallback(async () => {
 
       // --- MONETIZATION CHECK ---
-      const isProUser = false;
 
       if (
         !pdfBytes ||
@@ -108,7 +108,7 @@ export default function usePdfProcessor({
         if (
             user &&
             usage &&
-            usage.subscription_tier === 'free' &&
+            !isProUser &&
             (
               usage.pages_processed +
               totalPages
@@ -429,7 +429,7 @@ export default function usePdfProcessor({
         setIsProcessing(false);
       }
 
-    }, [
+       }, [
       pdfBytes,
       crop,
       imageRef,
@@ -440,6 +440,12 @@ export default function usePdfProcessor({
       setProgress,
       setErrorMessage,
       setShowUpgradeButton,
+      user,
+      usage,
+      setUsage,
+      completeProgress,
+      resetAppState,
+      isProUser,
     ]);
 
   return {

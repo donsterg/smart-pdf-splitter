@@ -11,18 +11,23 @@
   },
   "dependencies": {
     "@sentry/react": "^10.53.1",
+    "@stripe/stripe-js": "^9.7.0",
     "@supabase/supabase-js": "^2.106.2",
     "@vercel/speed-insights": "^2.0.0",
+    "dotenv": "^17.4.2",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "lucide-react": "^1.16.0",
+    "micro": "^10.0.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^3.11.174",
     "posthog-js": "^1.376.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-image-crop": "^11.0.10",
-    "tesseract.js": "^7.0.0"
+    "stripe": "^22.1.1",
+    "tesseract.js": "^7.0.0",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

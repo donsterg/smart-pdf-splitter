@@ -52,4 +52,12 @@ export const ENV = {
     import.meta.env
       .VITE_FREE_MONTHLY_PAGE_LIMIT
   ),
+
+  STRIPE_PUBLISHABLE_KEY:
+  import.meta.env
+    .VITE_STRIPE_PUBLISHABLE_KEY,
+
+  STRIPE_PRICE_ID:
+  import.meta.env
+    .VITE_STRIPE_PRICE_ID,
 };
