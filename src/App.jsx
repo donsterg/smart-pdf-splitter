@@ -15,6 +15,7 @@ import { trackEvent } from './services/analyticsService';
 import { useEffect } from 'react';
 import AuthPanel from './components/AuthPanel';
 import { getCurrentUser, onAuthStateChange } from './services/authService';
+import { ensureUserUsage } from './services/usageService';
 
 
 // UI UPGRADE: Imported professional icons from lucide-react
@@ -34,6 +35,8 @@ export default function PdfSplitterApp() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showUpgradeButton, setShowUpgradeButton] = useState(false);
   const [user, setUser] = useState(null);
+  const [usage, setUsage] = useState(null);
+  
 
   // UI UPGRADE: Added a progress state to show the user a visual loading bar during large splits
  const {
@@ -46,16 +49,48 @@ export default function PdfSplitterApp() {
 useEffect(() => {
 
   getCurrentUser()
-    .then(setUser);
+    .then(async (currentUser) => {
+
+      setUser(currentUser);
+
+      if (currentUser) {
+
+        const usageData =
+          await ensureUserUsage(
+            currentUser.id
+          );
+
+        setUsage(
+          usageData
+        );
+      }
+    });
 
   const {
     data: listener
   } = onAuthStateChange(
-    (_event, session) => {
+    async (_event, session) => {
 
-      setUser(
-        session?.user || null
-      );
+      const currentUser =
+        session?.user || null;
+
+      setUser(currentUser);
+
+      if (currentUser) {
+
+        const usageData =
+          await ensureUserUsage(
+            currentUser.id
+          );
+
+        setUsage(
+          usageData
+        );
+
+      } else {
+
+        setUsage(null);
+      }
     }
   );
 
@@ -68,6 +103,25 @@ useEffect(() => {
   
   
   const imageRef = useRef(null);
+
+  const resetAppState = () => {
+
+  setPdfBytes(null);
+
+  setPreviewImage(null);
+
+  setCrop(undefined);
+
+  setExtractedText('');
+
+  setPrefixFilter('');
+
+  setErrorMessage('');
+
+  setShowUpgradeButton(false);
+
+  resetProgress();
+};
 
   // 1. Handle File Upload (Logic remains exactly the same)
   const handleFileUpload = async (e) => {
@@ -146,6 +200,7 @@ const { performOCR } =
     setIsProcessing,
     setExtractedText,
     setErrorMessage,
+    trackEvent,
 });
 
 // 3. Split PDF and Download ZIP
@@ -162,6 +217,11 @@ const { splitAndDownload } =
     completeProgress,
     setErrorMessage,
     setShowUpgradeButton,
+    user,
+    trackEvent,
+    usage,
+    setUsage,
+    resetAppState,
 });
 
   // UI UPGRADE: Completely rebuilt the render block using Tailwind CSS classes.
@@ -195,6 +255,43 @@ const { splitAndDownload } =
               user={user}
               setUser={setUser}
             />
+
+            {usage && (
+              <div className="
+                bg-white
+                p-4
+                rounded-xl
+                shadow-sm
+                border
+              ">
+
+                <h3 className="
+                  font-semibold
+                  mb-2
+                ">
+                  Usage
+                </h3>
+
+                <p className="text-sm">
+                  PDFs Processed:
+                  {' '}
+                  {usage.pdfs_processed}
+                </p>
+
+                <p className="text-sm">
+                  Pages Processed:
+                  {' '}
+                  {usage.pages_processed}
+                </p>
+
+                <p className="text-sm">
+                  Plan:
+                  {' '}
+                  {usage.subscription_tier}
+                </p>
+
+              </div>
+            )}
             
             {/* Step 1: Upload Card */}
             <UploadCard

@@ -1,29 +1,28 @@
 import { useCallback } from 'react';
-
 import { PDFDocument } from 'pdf-lib';
-
 import pdfjsLib from '../services/pdfService';
 import { trackEvent } from '../services/analyticsService';
-
-import { recognizeText }
-  from '../services/ocrService';
-
+import { recognizeText } from '../services/ocrService';
 import {
   createZip,
   addPdfToZip,
   generateZipBlob,
   downloadZip,
 } from '../services/zipService';
-
 import {
   FREE_PAGE_LIMIT,
   PDF_RENDER_SCALE,
+  FREE_MONTHLY_PAGE_LIMIT,
   OCR_LANGUAGE,
 } from '../config/appConfig';
-
 import {
   captureError
 } from '../services/errorTrackingService';
+import {
+  incrementUsage,
+  ensureUserUsage,
+} from '../services/usageService';
+
 
 export default function usePdfProcessor({
   pdfBytes,
@@ -37,6 +36,11 @@ export default function usePdfProcessor({
   completeProgress,
   setErrorMessage,
   setShowUpgradeButton,
+  user,
+  trackEvent,
+  usage,
+  setUsage,
+  resetAppState,
 }) {
 
   const finalizeSubDocument =
@@ -99,6 +103,27 @@ export default function usePdfProcessor({
 
         const totalPages =
           tempPdf.getPageCount();
+
+
+        if (
+            user &&
+            usage &&
+            usage.subscription_tier === 'free' &&
+            (
+              usage.pages_processed +
+              totalPages
+            ) >
+            FREE_MONTHLY_PAGE_LIMIT
+          ) {
+
+            setErrorMessage(
+              `Monthly free limit of ${FREE_MONTHLY_PAGE_LIMIT} pages reached.`
+            );
+
+            setShowUpgradeButton(true);
+
+            return;
+          }
 
         if (
           totalPages > FREE_PAGE_LIMIT &&
@@ -354,6 +379,27 @@ export default function usePdfProcessor({
           await generateZipBlob(zip);
 
         downloadZip(zipBlob);
+
+        setTimeout(() => {
+
+          resetAppState();
+
+        }, 1000);
+
+        if (user) {
+
+          await incrementUsage(
+            user.id,
+            totalPages
+          );
+
+          const updatedUsage =
+            await ensureUserUsage(
+              user.id
+            );
+
+          setUsage(updatedUsage);
+        }
         trackEvent(
           'zip_downloaded',
           {

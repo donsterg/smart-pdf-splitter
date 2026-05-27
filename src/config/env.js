@@ -44,6 +44,12 @@ export const ENV = {
   SUPABASE_URL:
   import.meta.env.VITE_SUPABASE_URL,
 
-SUPABASE_ANON_KEY:
+  SUPABASE_ANON_KEY:
   import.meta.env.VITE_SUPABASE_ANON_KEY,
+
+  FREE_MONTHLY_PAGE_LIMIT:
+  Number(
+    import.meta.env
+      .VITE_FREE_MONTHLY_PAGE_LIMIT
+  ),
 };
