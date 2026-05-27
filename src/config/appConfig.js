@@ -29,3 +29,9 @@ export const POSTHOG_KEY =
 
 export const SENTRY_DSN =
   ENV.SENTRY_DSN;
+
+  export const SUPABASE_URL =
+  ENV.SUPABASE_URL;
+
+export const SUPABASE_ANON_KEY =
+  ENV.SUPABASE_ANON_KEY;

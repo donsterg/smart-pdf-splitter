@@ -12,6 +12,9 @@ import { MAX_FILE_MB, PDF_PREVIEW_SCALE } from './config/appConfig';
 import { APP_NAME } from './config/appConfig';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { trackEvent } from './services/analyticsService';
+import { useEffect } from 'react';
+import AuthPanel from './components/AuthPanel';
+import { getCurrentUser, onAuthStateChange } from './services/authService';
 
 
 // UI UPGRADE: Imported professional icons from lucide-react
@@ -30,6 +33,7 @@ export default function PdfSplitterApp() {
   const [prefixFilter, setPrefixFilter] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [showUpgradeButton, setShowUpgradeButton] = useState(false);
+  const [user, setUser] = useState(null);
 
   // UI UPGRADE: Added a progress state to show the user a visual loading bar during large splits
  const {
@@ -38,6 +42,29 @@ export default function PdfSplitterApp() {
   resetProgress,
   completeProgress,
 } = useProgress();
+
+useEffect(() => {
+
+  getCurrentUser()
+    .then(setUser);
+
+  const {
+    data: listener
+  } = onAuthStateChange(
+    (_event, session) => {
+
+      setUser(
+        session?.user || null
+      );
+    }
+  );
+
+  return () => {
+
+    listener.subscription.unsubscribe();
+  };
+
+}, []);
   
   
   const imageRef = useRef(null);
@@ -163,6 +190,11 @@ const { splitAndDownload } =
           
           {/* LEFT COLUMN: Controls & Settings (Takes up 5 columns out of 12) */}
           <div className="lg:col-span-5 space-y-6">
+
+            <AuthPanel
+              user={user}
+              setUser={setUser}
+            />
             
             {/* Step 1: Upload Card */}
             <UploadCard
